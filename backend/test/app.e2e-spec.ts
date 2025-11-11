@@ -29,15 +29,27 @@ describe('AppController (e2e)', () => {
     expect(response.text).toBe('Hello World!');
   });
 
+  /**
+   * 类型谓词：明确判断错误是否符合 supertest 断言失败的结构
+   */
+  function isSupertestError(err: unknown): err is { status: number; response: Response } {
+    return (
+      typeof err === 'object' &&
+      err !== null &&
+      'status' in err &&
+      'response' in err &&
+      typeof (err as { status: number }).status === 'number' &&
+      (err as { response: Response }).response instanceof Response
+    );
+  }
+
   it('/invalid-route (GET) should return 404', async () => {
     try {
       await agent.get('/invalid-route').expect(404);
     } catch (err: unknown) {
-      // 类型保护：先运行时检查err的结构，再安全断言类型
-      if (typeof err === 'object' && err !== null && 'status' in err && 'response' in err) {
-        const error = err as { status: number; response: Response };
-        expect(error.status).toBe(404);
-        expect(error.response.text).toContain('Not Found');
+      if (isSupertestError(err)) {
+        expect(err.status).toBe(404);
+        expect(err.response.text).toContain('Not Found');
       } else {
         fail('Unexpected error type (expected { status, response })');
       }
