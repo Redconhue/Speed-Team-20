@@ -2,7 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { SuperTest, Test as SuperTestTest, Response } from 'supertest';
+import { SuperTest, Test as SuperTestTest, Response, RequestError } from 'supertest';
+
+// 自定义错误类型接口，明确supertest错误的结构
+interface SupertestError {
+  status: number;
+  response: { text: string };
+}
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -31,7 +37,8 @@ describe('AppController (e2e)', () => {
     try {
       await agent.get('/invalid-route').expect(404);
     } catch (err) {
-      const error = err as { status: number; response: { text: string } };
+      // 精确断言错误类型为自定义的SupertestError
+      const error = err as SupertestError;
       expect(error.status).toBe(404);
       expect(error.response.text).toContain('Not Found');
     }
