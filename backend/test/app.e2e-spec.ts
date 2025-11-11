@@ -44,15 +44,12 @@ describe('AppController (e2e)', () => {
   }
 
   it('/invalid-route (GET) should return 404', async () => {
-    try {
-      await agent.get('/invalid-route').expect(404);
-    } catch (err: unknown) {
-      if (isSupertestError(err)) {
-        expect(err.status).toBe(404);
-        expect(err.response.text).toContain('Not Found');
-      } else {
-        fail('Unexpected error type (expected { status, response })');
-      }
+  try {
+    await agent.get('/invalid-route').expect(404);
+    } catch (err) {
+      const supertestError = err as { status: number; response: Response };
+      expect(supertestError.status).toBe(404);
+      expect(supertestError.response.text).toContain('Not Found');
     }
   });
 });
