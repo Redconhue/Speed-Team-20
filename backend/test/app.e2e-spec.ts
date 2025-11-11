@@ -15,11 +15,22 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  // 关键修改：it回调改为async函数，显式await请求结果
   it('/ (GET)', async () => {
     const response = await request(app.getHttpServer())
       .get('/')
-      .expect(200);
+      .expect(200) as { text: string }; // 明确响应类型断言
     expect(response.text).toBe('Hello World!');
+  });
+
+  it('should handle error', async () => {
+    try {
+      await request(app.getHttpServer())
+        .get('/invalid-route')
+        .expect(404);
+    } catch (err) {
+        const error = err as { status: number; text: string }; // 明确错误类型断言
+        expect(error.status).toBe(404);
+        expect(error.text).toContain('Not Found');
+    }
   });
 });
