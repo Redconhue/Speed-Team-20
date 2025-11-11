@@ -1,0 +1,61 @@
+name: CI  # 工作流名称
+
+# 触发条件：推送到main分支或创建PR到main分支时运行
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # 后端测试与检查
+  backend-check:
+    runs-on: ubuntu-latest  # 使用GitHub提供的Ubuntu环境
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 安装Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'  # 匹配团队使用的Node版本
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      - name: 安装后端依赖
+        working-directory: ./backend
+        run: npm ci  # 严格安装package-lock.json中的依赖
+      
+      - name: 代码格式检查（lint）
+        working-directory: ./backend
+        run: npm run lint  # 需在backend/package.json中配置lint脚本
+      
+      - name: 运行单元测试
+        working-directory: ./backend
+        run: npm test  # 需在backend/package.json中配置test脚本（默认Nest项目已包含）
+
+  # 前端测试与检查（类似后端）
+  frontend-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 安装Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: 安装前端依赖
+        working-directory: ./frontend
+        run: npm ci
+      
+      - name: 代码格式检查（lint）
+        working-directory: ./frontend
+        run: npm run lint
+      
+      - name: 运行单元测试
+        working-directory: ./frontend
+        run: npm test
