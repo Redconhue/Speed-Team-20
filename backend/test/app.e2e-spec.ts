@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { Response } from 'supertest';
-import { fail } from 'assert';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -44,12 +43,16 @@ describe('AppController (e2e)', () => {
   }
 
   it('/invalid-route (GET) should return 404', async () => {
-  try {
-    await agent.get('/invalid-route').expect(404);
-    } catch (err) {
-      const supertestError = err as { status: number; response: Response };
-      expect(supertestError.status).toBe(404);
-      expect(supertestError.response.text).toContain('Not Found');
+    try {
+      await agent.get('/invalid-route').expect(404);
+    } catch (err: unknown) {
+      if (isSupertestError(err)) {
+        expect(err.status).toBe(404);
+        expect(err.response.text).toContain('Not Found');
+      } else {
+        // 如果不是预期的错误类型，重新抛出或进行其他处理
+        throw err;
+      }
     }
   });
 });
