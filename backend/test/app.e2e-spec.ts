@@ -38,7 +38,8 @@ describe('AppController (e2e)', () => {
       'status' in err &&
       'response' in err &&
       typeof (err as { status: number }).status === 'number' &&
-      (err as { response: Response }).response instanceof Response
+      typeof (err as { response: unknown }).response === 'object' &&
+      (err as { response: unknown }).response !== null
     );
   }
 
@@ -48,9 +49,14 @@ describe('AppController (e2e)', () => {
     } catch (err: unknown) {
       if (isSupertestError(err)) {
         expect(err.status).toBe(404);
-        expect(err.response.text).toContain('Not Found');
+        // 安全地访问 response.text
+        if ('text' in err.response && typeof err.response.text === 'string') {
+          expect(err.response.text).toContain('Not Found');
+        } else {
+          // 如果 response 没有 text 属性，我们可以检查其他属性或抛出错误
+          throw new Error('Expected response to have text property');
+        }
       } else {
-        // 如果不是预期的错误类型，重新抛出或进行其他处理
         throw err;
       }
     }
