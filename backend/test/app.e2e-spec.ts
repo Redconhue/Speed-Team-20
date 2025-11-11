@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { Response } from 'supertest';
+import { fail } from 'assert';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -31,10 +32,15 @@ describe('AppController (e2e)', () => {
   it('/invalid-route (GET) should return 404', async () => {
     try {
       await agent.get('/invalid-route').expect(404);
-    } catch (err) {
-      const error = err as { status: number; response: Response };
-      expect(error.status).toBe(404);
-      expect(error.response.text).toContain('Not Found');
+    } catch (err: unknown) {
+      // 类型保护：先运行时检查err的结构，再安全断言类型
+      if (typeof err === 'object' && err !== null && 'status' in err && 'response' in err) {
+        const error = err as { status: number; response: Response };
+        expect(error.status).toBe(404);
+        expect(error.response.text).toContain('Not Found');
+      } else {
+        fail('Unexpected error type (expected { status, response })');
+      }
     }
   });
 });
