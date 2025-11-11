@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { Response } from 'supertest';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -28,37 +27,18 @@ describe('AppController (e2e)', () => {
     expect(response.text).toBe('Hello World!');
   });
 
-  /**
-   * 类型谓词：明确判断错误是否符合 supertest 断言失败的结构
-   */
-  function isSupertestError(err: unknown): err is { status: number; response: Response } {
-    return (
-      typeof err === 'object' &&
-      err !== null &&
-      'status' in err &&
-      'response' in err &&
-      typeof (err as { status: number }).status === 'number' &&
-      typeof (err as { response: unknown }).response === 'object' &&
-      (err as { response: unknown }).response !== null
-    );
-  }
-
   it('/invalid-route (GET) should return 404', async () => {
-    try {
-      await agent.get('/invalid-route').expect(404);
-    } catch (err: unknown) {
-      if (isSupertestError(err)) {
-        expect(err.status).toBe(404);
-        // 安全地访问 response.text
-        if ('text' in err.response && typeof err.response.text === 'string') {
-          expect(err.response.text).toContain('Not Found');
-        } else {
-          // 如果 response 没有 text 属性，我们可以检查其他属性或抛出错误
-          throw new Error('Expected response to have text property');
-        }
-      } else {
-        throw err;
-      }
-    }
+    // 直接使用 .expect() 来断言状态码，不需要 try-catch
+    await agent.get('/invalid-route').expect(404);
+  });
+
+  // 如果需要验证 404 响应的内容，可以使用这种方式
+  it('/invalid-route (GET) should return 404 with correct message', async () => {
+    const response = await agent
+      .get('/invalid-route')
+      .expect(404);
+    
+    // 直接检查响应文本
+    expect(response.text).toContain('Not Found');
   });
 });
