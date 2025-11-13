@@ -7,7 +7,6 @@ import { Paper, PaperStatus } from './schemas/paper.schema';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
-// 关键：必须加 export 关键字
 @Controller('papers')
 export class PapersController {
   constructor(private readonly papersService: PapersService) {}
@@ -43,7 +42,10 @@ export class PapersController {
       throw new BadRequestException('提交者姓名不能为空');
     }
     const bibtexContent = file.buffer.toString('utf-8');
-    const paperData = await this.papersService.parseBibtexAndCreate(bibtexContent, submitter);
+    
+    // 修复：移除 await，因为 parseBibtexAndCreate 现在是同步方法
+    const paperData = this.papersService.parseBibtexAndCreate(bibtexContent, submitter);
+    
     return this.papersService.create(paperData);
   }
 

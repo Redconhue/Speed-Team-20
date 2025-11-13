@@ -29,7 +29,6 @@ export class PapersService {
     return createdPaper.save();
   }
 
-  // 修复：移除 async 或添加 await，这里应该是同步操作
   parseBibtexAndCreate(bibtexContent: string, submitter: string): CreatePaperDto {
     const parsedData: ParsedBibtexData = { submitter };
     const bibtexRegex = {
@@ -48,8 +47,26 @@ export class PapersService {
         if (typedKey === 'year') {
           parsedData[typedKey] = parseInt(match[1]);
         } else {
-          // 使用类型断言确保类型安全
-          parsedData[typedKey] = match[1].trim() as any;
+          // 修复：使用更安全的类型转换
+          const stringValue = match[1].trim();
+          // 根据键名进行安全赋值
+          switch (typedKey) {
+            case 'title':
+              parsedData.title = stringValue;
+              break;
+            case 'authors':
+              parsedData.authors = stringValue;
+              break;
+            case 'doi':
+              parsedData.doi = stringValue;
+              break;
+            case 'journal':
+              parsedData.journal = stringValue;
+              break;
+            case 'abstract':
+              parsedData.abstract = stringValue;
+              break;
+          }
         }
       }
     }
@@ -58,7 +75,7 @@ export class PapersService {
       throw new Error('BibTeX文件缺少必要字段（标题、作者、DOI）');
     }
 
-    // 类型转换，确保返回 CreatePaperDto
+    // 返回 CreatePaperDto，确保所有字段都存在
     return {
       title: parsedData.title,
       authors: parsedData.authors,
@@ -67,7 +84,7 @@ export class PapersService {
       year: parsedData.year,
       abstract: parsedData.abstract,
       submitter: parsedData.submitter,
-    } as CreatePaperDto;
+    };
   }
 
   async findAll(status?: PaperStatus): Promise<Paper[]> {
