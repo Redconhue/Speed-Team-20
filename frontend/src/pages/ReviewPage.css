@@ -1,0 +1,168 @@
+.review-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.review-container h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.reviewer-info {
+  max-width: 500px;
+  margin: 0 auto 2rem;
+}
+
+.reviewer-info label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.reviewer-info input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.reviewer-info input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.error-message {
+  text-align: center;
+  color: #e74c3c;
+  margin-bottom: 2rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #7f8c8d;
+  font-size: 1.2rem;
+}
+
+.papers-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+  gap: 1.5rem;
+}
+
+.paper-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.paper-card:hover {
+  transform: translateY(-5px);
+}
+
+.paper-header {
+  background-color: #f8f9fa;
+  padding: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paper-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.status-badge {
+  padding: 0.3rem 0.6rem;
+  background-color: #f39c12;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.paper-details {
+  padding: 1.2rem;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.paper-details p {
+  margin: 0.5rem 0;
+  color: #34495e;
+  font-size: 0.95rem;
+}
+
+.paper-details strong {
+  color: #2c3e50;
+}
+
+.paper-actions {
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.approve-btn {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+}
+
+.approve-btn:hover {
+  background-color: #219653;
+}
+
+.reject-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+}
+
+.reject-btn:hover {
+  background-color: #c0392b;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem;
+  color: #7f8c8d;
+  font-size: 1.2rem;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .papers-list {
+    grid-template-columns: 1fr;
+  }
+
+  .paper-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
