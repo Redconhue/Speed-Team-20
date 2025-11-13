@@ -5,8 +5,6 @@ import { CreatePaperDto } from './dto/create-paper.dto';
 import { UpdatePaperStatusDto } from './dto/update-paper-status.dto';
 import { Paper, PaperStatus } from './schemas/paper.schema';
 import { memoryStorage } from 'multer';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 
 @Controller('papers')
 export class PapersController {
