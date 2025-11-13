@@ -4,6 +4,7 @@ import { PapersService } from './papers.service';
 import { CreatePaperDto } from './dto/create-paper.dto';
 import { UpdatePaperStatusDto } from './dto/update-paper-status.dto';
 import { Paper, PaperStatus } from './schemas/paper.schema';
+import { memoryStorage } from 'multer';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
@@ -19,35 +20,31 @@ export class PapersController {
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('bibtexFile', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, callback) => {
-          const randomName = Array(32).fill(null).map(() => Math.round(Math.random() * 16).toString(16)).join('');
-          callback(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
+      storage: memoryStorage(), // 使用内存存储
       fileFilter: (req, file, callback) => {
         if (!file.originalname.match(/\.(bib)$/)) {
           return callback(new BadRequestException('仅支持 .bib 格式文件'), false);
         }
-        callback(null, true);
+      callback(null, true);
       },
     }),
   )
-  async uploadBibtex(
-    @UploadedFile() file: Express.Multer.File,
-    @Body('submitter') submitter: string,
-  ): Promise<Paper> {
-    if (!submitter) {
-      throw new BadRequestException('提交者姓名不能为空');
-    }
-    const bibtexContent = file.buffer.toString('utf-8');
-    
-    // 修复：移除 await，因为 parseBibtexAndCreate 现在是同步方法
-    const paperData = this.papersService.parseBibtexAndCreate(bibtexContent, submitter);
-    
-    return this.papersService.create(paperData);
+async uploadBibtex(
+  @UploadedFile() file: Express.Multer.File,
+  @Body('submitter') submitter: string,
+): Promise<Paper> {
+  if (!file) {
+    throw new BadRequestException('文件不能为空');
   }
+  if (!submitter) {
+    throw new BadRequestException('提交者姓名不能为空');
+  }
+  
+  const bibtexContent = file.buffer.toString('utf-8');
+  const paperData = this.papersService.parseBibtexAndCreate(bibtexContent, submitter);
+  
+  return this.papersService.create(paperData);
+}
 
   @Get()
   findAll(): Promise<Paper[]> {
