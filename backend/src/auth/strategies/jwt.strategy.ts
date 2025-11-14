@@ -6,14 +6,12 @@ import { Request } from 'express';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private usersService: UsersService) {
+  constructor(private readonly usersService: UsersService) {
     super({
-      jwtFromRequest: (req: Request) => {
+      jwtFromRequest: (req: Request): string | null => {
         const authHeader = req.headers?.authorization;
-        if (authHeader && typeof authHeader === 'string') {
-          if (authHeader.startsWith('Bearer ')) {
-            return authHeader.substring(7);
-          }
+        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+          return authHeader.substring(7);
         }
         return null;
       },
@@ -22,13 +20,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: string }) {
+  async validate(payload: { sub: string }): Promise<any> {
     const userId = payload.sub;
     if (!userId) {
       throw new Error('Invalid token payload');
     }
     
-    const user = await this.usersService.findById(userId);
-    return user;
+    return this.usersService.findById(userId);
   }
 }
