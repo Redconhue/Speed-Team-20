@@ -16,16 +16,25 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return null;
       },
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'your-secret-key',
+      secretOrKey: getSecretKey(),
     });
   }
 
-  async validate(payload: { sub: string }): Promise<any> {
+  async validate(payload: { sub: string }): Promise<unknown> {
     const userId = payload.sub;
     if (!userId) {
       throw new Error('Invalid token payload');
     }
     
-    return this.usersService.findById(userId);
+    const user = await this.usersService.findById(userId);
+    return user;
   }
+}
+
+function getSecretKey(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+  return secret;
 }
