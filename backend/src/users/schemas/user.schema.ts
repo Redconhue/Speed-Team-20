@@ -1,13 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, ObjectId } from 'mongoose';
 
-// Import bcrypt with proper typing
-import * as bcrypt from 'bcryptjs';
-
-// Type assertions for bcrypt methods to help TypeScript
-const bcryptGenSalt = bcrypt.genSalt as (rounds: number) => Promise<string>;
-const bcryptHash = bcrypt.hash as (data: string, salt: string) => Promise<string>;
-const bcryptCompare = bcrypt.compare as (data: string, encrypted: string) => Promise<boolean>;
+// Define proper types for bcrypt methods
+type BcryptGenSalt = (rounds: number) => Promise<string>;
+type BcryptHash = (data: string, salt: string) => Promise<string>;
+type BcryptCompare = (data: string, encrypted: string) => Promise<boolean>;
 
 // 核心 User 接口
 export interface User extends Document {
@@ -42,8 +39,13 @@ UserSchema.pre<User>('save', async function (next) {
   if (!this.isModified('password')) return next();
   
   try {
-    const salt = await bcryptGenSalt(10);
-    this.password = await bcryptHash(this.password, salt);
+    // Use dynamic import to avoid type issues
+    const bcrypt = await import('bcryptjs');
+    const genSalt = bcrypt.genSalt as BcryptGenSalt;
+    const hash = bcrypt.hash as BcryptHash;
+    
+    const salt = await genSalt(10);
+    this.password = await hash(this.password, salt);
     next();
   } catch (error) {
     next(error as Error);
@@ -51,8 +53,10 @@ UserSchema.pre<User>('save', async function (next) {
 });
 
 // 密码验证方法
-UserSchema.methods.comparePassword = function (this: User, candidatePassword: string): Promise<boolean> {
-  return bcryptCompare(candidatePassword, this.password);
+UserSchema.methods.comparePassword = async function (this: User, candidatePassword: string): Promise<boolean> {
+  const bcrypt = await import('bcryptjs');
+  const compare = bcrypt.compare as BcryptCompare;
+  return compare(candidatePassword, this.password);
 };
 
 // 合并类型
