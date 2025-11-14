@@ -8,7 +8,13 @@ import { Request } from 'express';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private usersService: UsersService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: (req: Request) => {
+        const authHeader = req.headers?.authorization;
+        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+          return authHeader.substring(7);
+        }
+        return null;
+      },
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'your-secret-key',
     });
@@ -19,12 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!userId) {
       throw new Error('Invalid token payload');
     }
-    
-    const user = await this.usersService.findById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    
-    return user;
+    return this.usersService.findById(userId);
   }
 }
