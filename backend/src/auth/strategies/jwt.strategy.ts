@@ -10,8 +10,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: (req: Request) => {
         const authHeader = req.headers?.authorization;
-        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-          return authHeader.substring(7);
+        if (authHeader && typeof authHeader === 'string') {
+          if (authHeader.startsWith('Bearer ')) {
+            return authHeader.substring(7);
+          }
         }
         return null;
       },
@@ -25,6 +27,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!userId) {
       throw new Error('Invalid token payload');
     }
-    return this.usersService.findById(userId);
+    
+    const user = await this.usersService.findById(userId);
+    return user;
   }
 }
