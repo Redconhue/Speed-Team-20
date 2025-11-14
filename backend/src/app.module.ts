@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
 // 导入 PapersModule（确保路径和模块名完全匹配你的文件结构）
 import { PapersModule } from './papers/papers.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 
 @Module({
@@ -18,6 +20,9 @@ import { PapersModule } from './papers/papers.module';
     
     // 3. 导入文献功能模块（核心业务模块）
     PapersModule,
+
+    AuthModule,
+    UsersModule,
   ],
   // 根模块无需声明控制器和服务（都在子模块中）
   controllers: [],
