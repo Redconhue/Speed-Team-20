@@ -46,7 +46,13 @@ UserSchema.pre<User>('save', async function (next) {
     this.password = await bcryptHash(this.password, salt);
     next();
   } catch (error) {
-    next(error as Error);
+    // Type guard to check if error is an instance of Error
+    if (error instanceof Error) {
+      next(error);
+    } else {
+      // Handle non-Error objects by creating a new Error
+      next(new Error('An unknown error occurred during password hashing'));
+    }
   }
 });
 
