@@ -4,6 +4,11 @@ import { Document, ObjectId } from 'mongoose';
 // Import bcrypt with proper typing
 import * as bcrypt from 'bcryptjs';
 
+// Type assertions for bcrypt methods to help TypeScript
+const bcryptGenSalt = bcrypt.genSalt as (rounds: number) => Promise<string>;
+const bcryptHash = bcrypt.hash as (data: string, salt: string) => Promise<string>;
+const bcryptCompare = bcrypt.compare as (data: string, encrypted: string) => Promise<boolean>;
+
 // 核心 User 接口
 export interface User extends Document {
   _id: ObjectId;
@@ -37,22 +42,17 @@ UserSchema.pre<User>('save', async function (next) {
   if (!this.isModified('password')) return next();
   
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    const salt = await bcryptGenSalt(10);
+    this.password = await bcryptHash(this.password, salt);
     next();
   } catch (error) {
-    // Properly type the error and handle it
-    if (error instanceof Error) {
-      next(error);
-    } else {
-      next(new Error('Unknown error occurred during password hashing'));
-    }
+    next(error as Error);
   }
 });
 
 // 密码验证方法
 UserSchema.methods.comparePassword = function (this: User, candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
+  return bcryptCompare(candidatePassword, this.password);
 };
 
 // 合并类型
