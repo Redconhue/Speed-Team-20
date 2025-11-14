@@ -33,14 +33,28 @@ export const UserSchema = SchemaFactory.createForClass(UserModel);
 // 密码加密中间件
 UserSchema.pre<User>('save', async function (next) {
   if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(this.password, salt);
+    this.password = hashedPassword;
+    next();
+  } catch (error) {
+    next(error as Error);
+  }
 });
 
 // 密码验证方法
-UserSchema.methods.comparePassword = async function (this: User, candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
+UserSchema.methods.comparePassword = async function (
+  this: User,
+  candidatePassword: string,
+): Promise<boolean> {
+  try {
+    const isMatch = await bcrypt.compare(candidatePassword, this.password);
+    return isMatch;
+  } catch (error) {
+    return false;
+  }
 };
 
 // 合并类型
