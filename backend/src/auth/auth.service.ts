@@ -15,7 +15,6 @@ export class AuthService {
   // 注册
   async register(createUserDto: CreateUserDto) {
     try {
-      // 移除 UserDocument 类型断言，依赖接口类型
       const user = await this.usersService.create(createUserDto);
       
       if (!user || !(user._id instanceof Types.ObjectId)) {
@@ -34,16 +33,18 @@ export class AuthService {
           role: user.role,
         },
       };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : '注册失败';
-      throw new BadRequestException(message);
+    } catch (error: unknown) {
+      // 明确的错误类型处理
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('注册失败');
     }
   }
 
   // 登录
   async login(loginDto: LoginDto) {
     try {
-      // 移除 UserDocument 类型断言
       const user = await this.usersService.findByUsername(loginDto.username);
       
       if (!user || !(user._id instanceof Types.ObjectId)) {
@@ -67,18 +68,23 @@ export class AuthService {
           role: user.role,
         },
       };
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof UnauthorizedException || error instanceof NotFoundException) {
         throw error;
       }
-      const message = error instanceof Error ? error.message : '登录失败';
-      throw new BadRequestException(message);
+      // 明确的错误类型处理
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('登录失败');
     }
   }
 
-  // 生成JWT令牌
+  // 生成JWT令牌 - 添加更明确的类型处理
   private generateToken(userId: string): string {
     const payload = { sub: userId };
-    return this.jwtService.sign(payload) as string;
+    // 明确的类型断言
+    const token: string = this.jwtService.sign(payload);
+    return token;
   }
 }
