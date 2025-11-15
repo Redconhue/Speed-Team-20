@@ -9,6 +9,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Req() req) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return req.user; // JwtStrategy 解析后的用户信息
   }
 }
