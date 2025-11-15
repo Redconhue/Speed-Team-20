@@ -19,7 +19,7 @@ async function bootstrap() {
 }
 
 // 修复 Promise 处理
-bootstrap().catch(err => {
+bootstrap().catch((err) => {
   console.error('Bootstrap error:', err);
   process.exit(1);
 });

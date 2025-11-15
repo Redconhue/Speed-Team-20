@@ -1,4 +1,14 @@
-import { Controller, Post, Get, Body, Param, Put, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PapersService } from './papers.service';
 import { CreatePaperDto } from './dto/create-paper.dto';
@@ -21,28 +31,34 @@ export class PapersController {
       storage: memoryStorage(), // 使用内存存储
       fileFilter: (req, file, callback) => {
         if (!file.originalname.match(/\.(bib)$/)) {
-          return callback(new BadRequestException('仅支持 .bib 格式文件'), false);
+          return callback(
+            new BadRequestException('仅支持 .bib 格式文件'),
+            false,
+          );
         }
-      callback(null, true);
+        callback(null, true);
       },
     }),
   )
-async uploadBibtex(
-  @UploadedFile() file: Express.Multer.File,
-  @Body('submitter') submitter: string,
-): Promise<Paper> {
-  if (!file) {
-    throw new BadRequestException('文件不能为空');
+  async uploadBibtex(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('submitter') submitter: string,
+  ): Promise<Paper> {
+    if (!file) {
+      throw new BadRequestException('文件不能为空');
+    }
+    if (!submitter) {
+      throw new BadRequestException('提交者姓名不能为空');
+    }
+
+    const bibtexContent = file.buffer.toString('utf-8');
+    const paperData = this.papersService.parseBibtexAndCreate(
+      bibtexContent,
+      submitter,
+    );
+
+    return this.papersService.create(paperData);
   }
-  if (!submitter) {
-    throw new BadRequestException('提交者姓名不能为空');
-  }
-  
-  const bibtexContent = file.buffer.toString('utf-8');
-  const paperData = this.papersService.parseBibtexAndCreate(bibtexContent, submitter);
-  
-  return this.papersService.create(paperData);
-}
 
   @Get()
   findAll(): Promise<Paper[]> {

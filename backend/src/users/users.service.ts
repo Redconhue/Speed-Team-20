@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserModel, UserDocument } from './schemas/user.schema';
 
@@ -16,7 +16,6 @@ export class UsersService {
     const existingUser = await this.userModel.findOne({
       $or: [{ username: createUserDto.username }, { email: createUserDto.email }],
     });
-
     if (existingUser) {
       throw new BadRequestException('用户名或邮箱已被占用');
     }
@@ -37,10 +36,6 @@ export class UsersService {
 
   async findById(id: string): Promise<UserDocument> {
     if (!id) throw new BadRequestException('用户ID不能为空');
-    
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('无效的用户ID格式');
-    }
     
     const user = await this.userModel.findById(id);
     if (!user) {

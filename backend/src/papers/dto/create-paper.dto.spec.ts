@@ -22,8 +22,8 @@ describe('CreatePaperDto', () => {
 
     const errors = await validate(dto);
     expect(errors.length).toBeGreaterThan(0);
-    
-    const errorMessages = errors.map(error => error.constraints?.isNotEmpty);
+
+    const errorMessages = errors.map((error) => error.constraints?.isNotEmpty);
     expect(errorMessages).toContain('标题不能为空');
     expect(errorMessages).toContain('作者不能为空');
     expect(errorMessages).toContain('DOI不能为空');
