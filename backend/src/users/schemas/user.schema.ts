@@ -42,7 +42,9 @@ UserSchema.pre<User>('save', async function (next) {
   if (!this.isModified('password')) return next();
   
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const salt = await bcryptGenSalt(10);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     this.password = await bcryptHash(this.password, salt);
     next();
   } catch (error) {
@@ -58,6 +60,7 @@ UserSchema.pre<User>('save', async function (next) {
 
 // 密码验证方法
 UserSchema.methods.comparePassword = function (this: User, candidatePassword: string): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return bcryptCompare(candidatePassword, this.password);
 };
 
