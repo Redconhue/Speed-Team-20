@@ -13,9 +13,18 @@ interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private usersService: UsersService) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken() as () => string | null;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    // 完全避免使用 ExtractJwt.fromAuthHeaderAsBearerToken()，手动实现相同的功能
+    const jwtFromRequest = (req: any): string | null => {
+      const authHeader = req.headers?.authorization;
+      if (authHeader && typeof authHeader === 'string') {
+        const parts = authHeader.split(' ');
+        if (parts.length === 2 && parts[0] === 'Bearer') {
+          return parts[1];
+        }
+      }
+      return null;
+    };
+
     super({
       jwtFromRequest,
       ignoreExpiration: false,
@@ -29,14 +38,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       if (!payload || typeof payload.sub !== 'string') {
         throw new UnauthorizedException('无效的令牌载荷');
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      
       const user = await this.usersService.findById(payload.sub);
       
       if (!user) {
         throw new UnauthorizedException('用户不存在');
       }
+      
       return user;
-    } catch (_error) { // 使用 _error 表示故意不使用
+    } catch {
+      // 完全移除未使用的 error 参数
       throw new UnauthorizedException('认证失败');
     }
   }
