@@ -104,6 +104,14 @@ export class PapersService {
     return this.paperModel.find(query).sort({ submittedAt: -1 }).exec();
   }
 
+  async findPending(): Promise<Paper[]> {
+    return this.paperModel
+      .find({ status: PaperStatus.PENDING })
+      .sort({ submittedAt: -1 })
+      .exec();
+  }
+
+
   async updateStatus(
     id: string,
     status: PaperStatus,

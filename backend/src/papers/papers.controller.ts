@@ -67,7 +67,7 @@ export class PapersController {
 
   @Get('pending')
   findPending(): Promise<Paper[]> {
-    return this.papersService.findAll(PaperStatus.PENDING);
+    return this.papersService.findPending();
   }
 
   @Put(':id/approve')
