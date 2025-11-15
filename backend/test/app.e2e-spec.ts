@@ -11,10 +11,10 @@ describe('AppController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-    
+
     app = moduleFixture.createNestApplication();
     await app.init();
-    
+
     // 添加类型断言
     agent = request(app.getHttpServer()) as request.SuperTest<request.Test>;
   });
@@ -29,9 +29,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/invalid-route (GET) should return 404', async () => {
-    const response = await agent
-      .get('/invalid-route')
-      .expect(404);
+    const response = await agent.get('/invalid-route').expect(404);
     expect(response.text).toContain('Not Found');
   });
 });

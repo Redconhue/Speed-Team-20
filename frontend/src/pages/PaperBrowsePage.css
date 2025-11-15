@@ -1,0 +1,35 @@
+.paper-browse-page {
+  min-height: 100vh;
+  background-color: #fafafa;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page-title {
+  font-size: 28px;
+  color: #2d3748;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.papers-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.loading, .error, .no-papers {
+  text-align: center;
+  padding: 48px;
+  font-size: 18px;
+  color: #4a5568;
+}
+
+.error {
+  color: #e53e3e;
+}

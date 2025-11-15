@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Paper, PaperStatus } from './schemas/paper.schema';
@@ -21,15 +25,23 @@ export class PapersService {
   constructor(@InjectModel(Paper.name) private paperModel: Model<Paper>) {}
 
   async create(createPaperDto: CreatePaperDto): Promise<Paper> {
-    const existingPaper = await this.paperModel.findOne({ doi: createPaperDto.doi }).exec();
+    const existingPaper = await this.paperModel
+      .findOne({ doi: createPaperDto.doi })
+      .exec();
     if (existingPaper) {
       throw new ConflictException('该DOI已提交过');
     }
-    const createdPaper = new this.paperModel({ ...createPaperDto, submittedAt: new Date() });
+    const createdPaper = new this.paperModel({
+      ...createPaperDto,
+      submittedAt: new Date(),
+    });
     return createdPaper.save();
   }
 
-  parseBibtexAndCreate(bibtexContent: string, submitter: string): CreatePaperDto {
+  parseBibtexAndCreate(
+    bibtexContent: string,
+    submitter: string,
+  ): CreatePaperDto {
     const parsedData: ParsedBibtexData = { submitter };
     const bibtexRegex = {
       title: /title\s*=\s*["{](.*?)["}]/i,
@@ -100,14 +112,16 @@ export class PapersService {
     const paper = await this.paperModel.findById(id).exec();
     if (!paper) throw new NotFoundException('文献不存在');
 
-    const updatedPaper = await this.paperModel.findByIdAndUpdate(
-      id,
-      { status, reviewer: dto.reviewer, reviewedAt: new Date() },
-      { new: true, runValidators: true }
-    ).exec();
+    const updatedPaper = await this.paperModel
+      .findByIdAndUpdate(
+        id,
+        { status, reviewer: dto.reviewer, reviewedAt: new Date() },
+        { new: true, runValidators: true },
+      )
+      .exec();
 
     if (!updatedPaper) throw new NotFoundException('文献更新失败');
-    
+
     return updatedPaper;
   }
 }

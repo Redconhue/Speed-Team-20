@@ -36,6 +36,33 @@
   color: #3498db;
 }
 
+.navbar-register {
+  background-color: #3498db;
+  padding: 0.5rem 1rem;
+}
+
+.navbar-register:hover {
+  background-color: #2980b9;
+}
+
+.navbar-user {
+  color: #ecf0f1;
+}
+
+.navbar-logout {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.navbar-logout:hover {
+  background-color: #c0392b;
+}
+
 /* 响应式适配 */
 @media (max-width: 768px) {
   .navbar-container {

@@ -33,7 +33,7 @@ describe('PaperSchema', () => {
     };
 
     const paper = new paperModel(paperData);
-    
+
     expect(paper.title).toBe(paperData.title);
     expect(paper.authors).toBe(paperData.authors);
     expect(paper.doi).toBe(paperData.doi);
@@ -51,7 +51,7 @@ describe('PaperSchema', () => {
     };
 
     const paper = new paperModel(paperData);
-    
+
     expect(paper.title).toBe('Test Paper');
     expect(paper.authors).toBe('Author1, Author2');
     expect(paper.doi).toBe('10.1234/test.12345');
@@ -70,7 +70,7 @@ describe('PaperSchema', () => {
     };
 
     const paper = new paperModel(paperData);
-    
+
     expect(paper.abstract).toBe(paperData.abstract);
     expect(paper.journal).toBe(paperData.journal);
     expect(paper.year).toBe(paperData.year);
