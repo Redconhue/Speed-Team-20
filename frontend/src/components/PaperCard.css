@@ -1,0 +1,87 @@
+.paper-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.paper-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.paper-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.paper-title {
+  font-size: 18px;
+  margin: 0;
+  color: #2d3748;
+}
+
+.paper-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.paper-title a:hover {
+  color: #4299e1;
+  text-decoration: underline;
+}
+
+.status-tag {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.paper-card-body {
+  margin-bottom: 16px;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.paper-authors, .paper-journal, .paper-year, .paper-submitter, .paper-submit-time {
+  margin: 4px 0;
+}
+
+.paper-card-footer {
+  text-align: right;
+}
+
+.view-detail-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #4299e1;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.view-detail-btn:hover {
+  background-color: #3182ce;
+  color: white;
+}
