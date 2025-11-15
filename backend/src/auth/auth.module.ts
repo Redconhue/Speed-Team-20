@@ -11,7 +11,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET as string || 'speed-team-secret-key',
+      secret: (process.env.JWT_SECRET as string) || 'speed-team-secret-key',
       signOptions: { expiresIn: '24h' },
     }),
     UsersModule,
