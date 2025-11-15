@@ -12,10 +12,9 @@ interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private usersService: UsersService) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // 移除不必要的注释，直接使用类型安全的调用
     const jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
     
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     super({
       jwtFromRequest,
       ignoreExpiration: false,
@@ -30,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('无效的令牌载荷');
       }
       
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      // 移除不必要的注释，确保类型安全
       const user = await this.usersService.findById(payload.sub);
       
       if (!user) {
