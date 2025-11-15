@@ -5,8 +5,10 @@ import { UsersService } from '../../users/users.service';
 import { Request } from 'express';
 
 @Injectable()
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly usersService: UsersService) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     super({
       jwtFromRequest: (req: Request): string | null => {
         const authHeader = req.headers?.authorization;
@@ -16,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return null;
       },
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'speed-team-secret-key', // 直接使用，避免函数调用
+      secretOrKey: process.env.JWT_SECRET || 'speed-team-secret-key',
     });
   }
 
