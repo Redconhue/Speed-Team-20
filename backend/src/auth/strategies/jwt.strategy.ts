@@ -13,7 +13,7 @@ interface JwtPayload {
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private usersService: UsersService) {
-    
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
     
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
