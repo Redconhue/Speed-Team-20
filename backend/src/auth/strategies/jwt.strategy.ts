@@ -1,6 +1,6 @@
 import { Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
 import { Request } from 'express';
 
@@ -16,25 +16,20 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return null;
       },
       ignoreExpiration: false,
-      secretOrKey: getSecretKey(),
+      secretOrKey: process.env.JWT_SECRET || 'speed-team-secret-key', // 直接使用，避免函数调用
     });
   }
 
   async validate(payload: { sub: string }): Promise<unknown> {
     const userId = payload.sub;
     if (!userId) {
-      throw new Error('Invalid token payload');
+      throw new UnauthorizedException('Invalid token payload');
     }
     
     const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
     return user;
   }
-}
-
-function getSecretKey(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    throw new Error('JWT_SECRET environment variable is not set');
-  }
-  return secret;
 }
